@@ -1,5 +1,6 @@
 type Query {
     customers: [Customer]
+    customersByName(name: String): [Customer]
 }
 
 type Customer {
@@ -11,4 +12,18 @@ type Customer {
 type Order {
     id: ID
     customerId: ID
+}
+
+input InputOrder {
+    id: ID
+    customerId: ID
+}
+
+type Mutation {
+    addCustomer(name: String) : Customer
+    deleteCustomerById(customerId: ID): Boolean
+    deleteCustomerByName(customerName: String): Boolean
+    updateCustomer(customerId: ID, customerName: String): Customer
+
+    addOrder(order: InputOrder) : Order
 }
