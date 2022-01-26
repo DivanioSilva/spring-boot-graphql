@@ -46,7 +46,7 @@ public class CustomerController {
     }
 
     @MutationMapping
-    Mono<Customer> addCustomer(@Argument String name){
+    Mono<Customer> createCustomer(@Argument String name){
         return this.customerRepository.save(Customer.builder().name(name).build());
     }
 
@@ -70,7 +70,7 @@ public class CustomerController {
     }
 
     @MutationMapping
-    Mono<Order> addOrder(@Argument InputOrder inputOrder){
+    Mono<Order> createOrder(@Argument InputOrder inputOrder){
         Order order = Order.builder().id(inputOrder.getId()).customerId(inputOrder.getCustomerId()).build();
         this.orders.add(order);
         return Mono.just(order);

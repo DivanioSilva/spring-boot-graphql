@@ -1,11 +1,12 @@
 type Query {
+    """find all customers and orders"""
     customers: [Customer]
     customersByName(name: String): [Customer]
 }
 
 type Customer {
     id: ID,
-    name: String
+    name: String!
     orders: [Order]
 }
 
@@ -20,10 +21,10 @@ input InputOrder {
 }
 
 type Mutation {
-    addCustomer(name: String) : Customer
+    createCustomer(name: String) : Customer
     deleteCustomerById(customerId: ID): Boolean
     deleteCustomerByName(customerName: String): Boolean
     updateCustomer(customerId: ID, customerName: String): Customer
 
-    addOrder(order: InputOrder) : Order
+    createOrder(inputOrder: InputOrder!) : Order!
 }

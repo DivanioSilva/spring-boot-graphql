@@ -2,8 +2,10 @@ package com.example.springbootgraphql.domain;
 
 import lombok.Builder;
 
+import java.io.Serializable;
+
 @Builder
-public class InputOrder {
+public class InputOrder implements Serializable {
     //@Id
     private Integer id;
     private Integer customerId;
