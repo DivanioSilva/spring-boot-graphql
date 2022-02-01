@@ -13,11 +13,13 @@ type Customer {
 type Order {
     id: ID
     customerId: ID
+    productName: String
 }
 
 input InputOrder {
     id: ID
     customerId: ID
+    productName: String
 }
 
 type Mutation {

@@ -4,6 +4,8 @@ import com.example.springbootgraphql.domain.Customer;
 import com.example.springbootgraphql.domain.InputOrder;
 import com.example.springbootgraphql.domain.Order;
 import com.example.springbootgraphql.repository.CustomerRepository;
+import com.example.springbootgraphql.repository.OrderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -15,13 +17,16 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Controller
 public class CustomerController {
     private final CustomerRepository customerRepository;
-    private List<Order> orders;
+    private final OrderRepository orderRepository;
+    private final List<Order> orders;
 
-    public CustomerController(CustomerRepository customerRepository) {
+    public CustomerController(CustomerRepository customerRepository, OrderRepository orderRepository) {
         this.customerRepository = customerRepository;
+        this.orderRepository = orderRepository;
         this.orders = new ArrayList<>();
     }
 
@@ -29,7 +34,7 @@ public class CustomerController {
     Flux<Order> orders(Customer customer){
         if(this.orders.isEmpty()){
             for (int orderid = 1; orderid <= (Math.random() * 100); orderid++) {
-                orders.add(Order.builder().id(orderid).customerId(customer.getId()).build());
+                //orders.add(Order.builder().id(orderid).customerId(customer.getId()).build());
             }
         }
         return Flux.fromIterable(orders);
@@ -71,9 +76,12 @@ public class CustomerController {
 
     @MutationMapping
     Mono<Order> createOrder(@Argument InputOrder inputOrder){
-        Order order = Order.builder().id(inputOrder.getId()).customerId(inputOrder.getCustomerId()).build();
-        this.orders.add(order);
-        return Mono.just(order);
+        log.info("createOrder method was called.");
+        Order order = Order.builder().id(inputOrder.getId()).productName(inputOrder.getProductName()).build();
+        //this.orders.add(order);
+        //return Mono.just(order);
+        Mono<Order> save = this.orderRepository.save(order);
+        return save;
     }
 
 }

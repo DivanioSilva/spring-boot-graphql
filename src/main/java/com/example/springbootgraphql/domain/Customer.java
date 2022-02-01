@@ -7,9 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class Customer {
     @Id
@@ -17,4 +19,9 @@ public class Customer {
     private Integer id;
     @JsonProperty("name")
     private String name;
+    private List<Order> orders;
+
+    public Customer() {
+        orders = new ArrayList<>();
+    }
 }
