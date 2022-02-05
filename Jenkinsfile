@@ -34,37 +34,33 @@ pipeline {
                     pom = readMavenPom file: "pom.xml";
                     // Find built artifact under target folder
                     filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
+                    echo 'filesByGlob' +filesByGlob
                     // Print some info from the artifact found
                     echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length} ${filesByGlob[0].lastModified}"
                     // Extract the path from the File found
                     artifactPath = filesByGlob[0].path;
+                    echo 'artifactPath: '+ artifactPath
                     // Assign to a boolean response verifying If the artifact name exists
                     artifactExists = fileExists artifactPath;
+                    echo 'artifactExists:' +artifactExists
                     if(artifactExists) {
                         echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
 
-                        nexusArtifactUploader(
-                            nexusVersion: NEXUS_VERSION,
-                            protocol: NEXUS_PROTOCOL,
-                            nexusUrl: NEXUS_URL,
-                            groupId: pom.groupId,
-                            version: pom.version,
-                            repository: NEXUS_REPOSITORY,
-                            credentialsId: NEXUS_CREDENTIAL_ID,
-                            artifacts: [
-                                // Artifact generated such as .jar, .ear and .war files.
-                                [artifactId: pom.artifactId,
+                        nexusArtifactUploader artifacts: [
+                            [
+                                artifactId: 'spring-boot-graphql',
                                 classifier: '',
                                 file: artifactPath,
-                                type: pom.packaging],
-
-                                // Lets upload the pom.xml file for additional information for Transitive dependencies
-                                [artifactId: pom.artifactId,
-                                classifier: '',
-                                file: "pom.xml",
-                                type: "pom"]
-                            ]
-                        );
+                                type: 'jar']
+                            ],
+                            credentialsId: 'nexus3',
+                            groupId: 'com.ds',
+                            nexusUrl: '192.168.1.149:8081',
+                            nexusVersion: 'nexus3',
+                            protocol: 'http',
+                            repository: 'maven-nexus-repo/',
+                            version: '0.0.1-SNAPSHOT'
+                        //);
                         /*
                         nexusArtifactUploader(
                             nexusVersion: 'nexus3',
