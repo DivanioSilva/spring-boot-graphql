@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.ds</groupId>
     <artifactId>spring-boot-graphql</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1-RELEASE</version>
     <name>spring-boot-graphql</name>
     <description>Demo project for Spring Boot</description>
     <packaging>jar</packaging>
@@ -91,6 +91,17 @@
             <releases>
                 <enabled>false</enabled>
             </releases>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <id>myPrivateNexus</id>
+            <name>libraries</name>
+            <url>http://dcsilva.ddns.net:8081/repository/maven-nexus-repo/</url>
         </repository>
     </repositories>
     <pluginRepositories>

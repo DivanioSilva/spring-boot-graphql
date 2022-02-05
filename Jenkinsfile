@@ -59,7 +59,7 @@ pipeline {
                             nexusVersion: 'nexus3',
                             protocol: 'http',
                             repository: 'maven-nexus-repo/',
-                            version: '0.0.1-SNAPSHOT'
+                            version: '0.0.1-RELEASE'
                         //);
                         /*
                         nexusArtifactUploader(
