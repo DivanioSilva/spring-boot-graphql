@@ -31,8 +31,10 @@ pipeline {
             steps {
                 script {
                     // Read POM xml file using 'readMavenPom' step , this step 'readMavenPom' is included in: https://plugins.jenkins.io/pipeline-utility-steps
-                    pom = readMavenPom file: "pom.xml";
+                    def pom = readMavenPom file: "pom.xml";
                     // Find built artifact under target folder
+
+                    //def nexusRepoName = pom.version.endswith("SNAPSHOT") ? "maven-nexus-repo-snapshots" : "maven-nexus-repo"
                     filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
                     echo 'filesByGlob' +filesByGlob
                     // Print some info from the artifact found
@@ -59,7 +61,7 @@ pipeline {
                             nexusVersion: 'nexus3',
                             protocol: 'http',
                             repository: 'maven-nexus-repo/',
-                            version: '0.0.1-RELEASE'
+                            version: '${pom.version}'
                         //);
                         /*
                         nexusArtifactUploader(
