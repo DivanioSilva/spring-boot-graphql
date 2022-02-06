@@ -94,14 +94,25 @@
         </repository>
         <repository>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
             <releases>
                 <enabled>true</enabled>
             </releases>
-            <id>myPrivateNexus</id>
+            <id>myPrivateNexus-releases</id>
             <name>libraries</name>
-            <url>http://dcsilva.ddns.net:8081/repository/maven-nexus-repo/</url>
+            <url>http://dcsilva.ddns.net:8081/repository/maven-nexus-repo-release/</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <id>myPrivateNexus-snapshots</id>
+            <name>libraries</name>
+            <url>http://dcsilva.ddns.net:8081/repository/maven-nexus-repo-snapshot/</url>
         </repository>
     </repositories>
     <pluginRepositories>
