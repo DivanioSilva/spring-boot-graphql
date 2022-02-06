@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.ds</groupId>
     <artifactId>spring-boot-graphql</artifactId>
-    <version>0.0.999-SNAPSHOT</version>
+    <version>0.0.9991-SNAPSHOT</version>
     <name>spring-boot-graphql</name>
     <description>Demo project for Spring Boot</description>
     <packaging>jar</packaging>

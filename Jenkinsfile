@@ -54,10 +54,10 @@ pipeline {
 
                         nexusArtifactUploader artifacts: [
                             [
-                                artifactId: 'spring-boot-graphql',
+                                artifactId: pom.name,
                                 classifier: '',
                                 file: artifactPath,
-                                type: 'jar']
+                                type: pom.packaging]
                             ],
                             credentialsId: 'nexus3',
                             groupId: 'com.ds',
