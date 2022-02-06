@@ -11,7 +11,7 @@ pipeline {
         NEXUS_URL = "http://192.168.1.149:8081"
         NEXUS_REPOSITORY_RELEASE = "maven-nexus-repo"
         NEXUS_REPOSITORY_SNAPSHOT = "maven-nexus-repo-snapshot"
-        NEXUS_CREDENTIAL_ID = "cartas123456"
+        NEXUS_CREDENTIAL_ID = "nexus3"
         REPOSITORY = "https://github.com/DivanioSilva/spring-boot-graphql.git"
     }
     stages {
