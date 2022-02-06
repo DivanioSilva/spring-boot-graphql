@@ -9,7 +9,8 @@ pipeline {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_URL = "http://192.168.1.149:8081"
-        NEXUS_REPOSITORY = "maven-nexus-repo"
+        NEXUS_REPOSITORY_RELEASE = "maven-nexus-repo"
+        NEXUS_REPOSITORY_SNAPSHOT = "maven-nexus-repo-snapshot"
         NEXUS_CREDENTIAL_ID = "cartas123456"
         REPOSITORY = "https://github.com/DivanioSilva/spring-boot-graphql.git"
     }
@@ -25,7 +26,7 @@ pipeline {
         stage("Maven Build") {
             steps {
                 script {
-                    sh "mvn package -DskipTests=true"
+                    sh "mvn clean package -DskipTests=true"
                 }
             }
         }
@@ -39,7 +40,8 @@ pipeline {
                     echo 'pom.packaging: ' +pom.packaging
                     echo 'pom.groupId: ' +pom.groupId
                     echo 'pom.name: ' +pom.name
-                    def nexusRepoName = pom.version.endsWith("SNAPSHOT") ? "maven-nexus-repo-snapshots" : "maven-nexus-repo"
+                    def nexusRepoName = pom.version.endsWith("SNAPSHOT") ? NEXUS_REPOSITORY_SNAPSHOT : NEXUS_REPOSITORY_RELEASE
+                    echo 'nexusRepoName: ' +nexusRepoName
                     filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
                     echo 'filesByGlob' +filesByGlob
                     // Print some info from the artifact found
@@ -60,9 +62,9 @@ pipeline {
                                 file: artifactPath,
                                 type: pom.packaging]
                             ],
-                            credentialsId: 'nexus3',
+                            credentialsId: NEXUS_CREDENTIAL_ID,
                             groupId: pom.groupId,
-                            nexusUrl: '192.168.1.149:8081',
+                            nexusUrl: NEXUS_URL,
                             nexusVersion: NEXUS_VERSION,
                             protocol: NEXUS_PROTOCOL,
                             repository: nexusRepoName,
