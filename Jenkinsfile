@@ -58,8 +58,8 @@ pipeline {
                             nexusUrl: '192.168.1.149:8081',
                             nexusVersion: 'nexus3',
                             protocol: 'http',
-                            repository: 'maven-nexus-repo/',
-                            version: '0.0.1-RELEASE'
+                            repository: 'maven-nexus-repo-snapshot/',
+                            version: pom.version
                     } else {
                         error "*** File: ${artifactPath}, could not be found";
                     }
