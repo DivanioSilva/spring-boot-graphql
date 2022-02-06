@@ -1,3 +1,5 @@
+import hudson.model.*
+
 pipeline {
     agent any
     tools {
@@ -33,8 +35,11 @@ pipeline {
                     // Read POM xml file using 'readMavenPom' step , this step 'readMavenPom' is included in: https://plugins.jenkins.io/pipeline-utility-steps
                     def pom = readMavenPom file: "pom.xml";
                     // Find built artifact under target folder
-
-                    //def nexusRepoName = pom.version.endswith("SNAPSHOT") ? "maven-nexus-repo-snapshots" : "maven-nexus-repo"
+                    echo 'Pom info::::'
+                    echo 'pom.packaging: ' +pom.packaging
+                    echo 'pom.groupId: ' +pom.groupId
+                    echo 'pom.name: ' +pom.name
+                    def nexusRepoName = pom.version.endsWith("SNAPSHOT") ? "maven-nexus-repo-snapshots" : "maven-nexus-repo"
                     filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
                     echo 'filesByGlob' +filesByGlob
                     // Print some info from the artifact found
@@ -50,57 +55,18 @@ pipeline {
 
                         nexusArtifactUploader artifacts: [
                             [
-                                artifactId: 'spring-boot-graphql',
+                                artifactId: pom.name,
                                 classifier: '',
                                 file: artifactPath,
-                                type: 'jar']
+                                type: pom.packaging]
                             ],
                             credentialsId: 'nexus3',
-                            groupId: 'com.ds',
+                            groupId: pom.groupId,
                             nexusUrl: '192.168.1.149:8081',
-                            nexusVersion: 'nexus3',
-                            protocol: 'http',
-                            repository: 'maven-nexus-repo/',
-                            version: '${pom.version}'
-                        //);
-                        /*
-                        nexusArtifactUploader(
-                            nexusVersion: 'nexus3',
-                            protocol: 'http',
-                            nexusUrl: NEXUS_URL,
-                            groupId: 'com.example',
-                            version: '1.1.1.1.99',
-                            repository: NEXUS_REPOSITORY,
-                            credentialsId: NEXUS_CREDENTIAL_ID,
-                            artifacts: [
-                                [artifactId: 'meuTeste',
-                                 classifier: '',
-                                 file: 'my-service-TESTE' + "1.1.1.99" + '.jar',
-                                 type: 'jar']
-                            ]
-                         )
-                         */
-                        /*
-                        nexusArtifactUploader(
                             nexusVersion: NEXUS_VERSION,
                             protocol: NEXUS_PROTOCOL,
-                            nexusUrl: NEXUS_URL,
-                            groupId: pom.groupId,
-                            version: pom.version,
-                            repository: NEXUS_REPOSITORY,
-                            credentialsId: NEXUS_CREDENTIAL_ID,
-                            artifacts: [
-                                [artifactId: pom.artifactId,
-                                classifier: '',
-                                file: artifactPath,
-                                type: pom.packaging],
-                                [artifactId: pom.artifactId,
-                                classifier: '',
-                                file: "pom.xml",
-                                type: "pom"]
-                            ]
-                        );
-                        */
+                            repository: nexusRepoName,
+                            version: pom.version
                     } else {
                         error "*** File: ${artifactPath}, could not be found";
                     }
