@@ -34,7 +34,6 @@ pipeline {
                 script {
                     // Read POM xml file using 'readMavenPom' step , this step 'readMavenPom' is included in: https://plugins.jenkins.io/pipeline-utility-steps
                     pom = readMavenPom file: "pom.xml";
-
                     def nexusRepoName = pom.version.endsWith("SNAPSHOT") ? NEXUS_REPOSITORY_SNAPSHOT : NEXUS_REPOSITORY_RELEASE
                     echo 'nexusRepoName:------> ' +nexusRepoName
                     // Find built artifact under target folder
@@ -50,7 +49,6 @@ pipeline {
                     echo 'artifactExists:' +artifactExists
                     if(artifactExists) {
                         echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
-
                         nexusArtifactUploader artifacts: [
                             [
                                 artifactId: pom.name,
@@ -58,7 +56,7 @@ pipeline {
                                 file: artifactPath,
                                 type: pom.packaging]
                             ],
-                            credentialsId: 'nexus3',
+                            credentialsId: NEXUS_CREDENTIAL_ID,
                             groupId: pom.groupId,
                             nexusUrl: NEXUS_URL,
                             nexusVersion: NEXUS_VERSION,
