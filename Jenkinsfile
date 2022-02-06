@@ -1,5 +1,3 @@
-import hudson.model.*
-
 pipeline {
     agent any
     tools {
@@ -9,9 +7,8 @@ pipeline {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_URL = "http://192.168.1.149:8081"
-        NEXUS_REPOSITORY_RELEASE = "maven-nexus-repo/"
-        NEXUS_REPOSITORY_SNAPSHOT = "maven-nexus-repo-snapshot/"
-        NEXUS_CREDENTIAL_ID = "nexus3"
+        NEXUS_REPOSITORY = "maven-nexus-repo"
+        NEXUS_CREDENTIAL_ID = "cartas123456"
         REPOSITORY = "https://github.com/DivanioSilva/spring-boot-graphql.git"
     }
     stages {
@@ -26,7 +23,7 @@ pipeline {
         stage("Maven Build") {
             steps {
                 script {
-                    sh "mvn clean package -DskipTests=true"
+                    sh "mvn package -DskipTests=true"
                 }
             }
         }
@@ -34,14 +31,8 @@ pipeline {
             steps {
                 script {
                     // Read POM xml file using 'readMavenPom' step , this step 'readMavenPom' is included in: https://plugins.jenkins.io/pipeline-utility-steps
-                    def pom = readMavenPom file: "pom.xml";
+                    pom = readMavenPom file: "pom.xml";
                     // Find built artifact under target folder
-                    echo 'Pom info::::'
-                    echo 'pom.packaging: ' +pom.packaging
-                    echo 'pom.groupId: ' +pom.groupId
-                    echo 'pom.name: ' +pom.name
-                    def nexusRepoName = pom.version.endsWith("SNAPSHOT") ? NEXUS_REPOSITORY_SNAPSHOT : NEXUS_REPOSITORY_RELEASE
-                    echo 'nexusRepoName: ' +nexusRepoName
                     filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
                     echo 'filesByGlob' +filesByGlob
                     // Print some info from the artifact found
@@ -57,18 +48,18 @@ pipeline {
 
                         nexusArtifactUploader artifacts: [
                             [
-                                artifactId: pom.name,
+                                artifactId: 'spring-boot-graphql',
                                 classifier: '',
                                 file: artifactPath,
-                                type: pom.packaging]
+                                type: 'jar']
                             ],
-                            credentialsId: NEXUS_CREDENTIAL_ID,
-                            groupId: pom.groupId,
-                            nexusUrl: NEXUS_URL,
-                            nexusVersion: NEXUS_VERSION,
-                            protocol: NEXUS_PROTOCOL,
-                            repository: nexusRepoName,
-                            version: pom.version
+                            credentialsId: 'nexus3',
+                            groupId: 'com.ds',
+                            nexusUrl: '192.168.1.149:8081',
+                            nexusVersion: 'nexus3',
+                            protocol: 'http',
+                            repository: 'maven-nexus-repo/',
+                            version: '0.0.1-RELEASE'
                     } else {
                         error "*** File: ${artifactPath}, could not be found";
                     }
