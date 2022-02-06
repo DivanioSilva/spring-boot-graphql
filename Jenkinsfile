@@ -1,3 +1,4 @@
+import hudson.model.*
 pipeline {
     agent any
     tools {
@@ -7,7 +8,9 @@ pipeline {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_URL = "http://192.168.1.149:8081"
-        NEXUS_REPOSITORY = "maven-nexus-repo"
+        NEXUS_REPOSITORY_RELEASE = "maven-nexus-repo/"
+        NEXUS_REPOSITORY_SNAPSHOT = "maven-nexus-repo-snapshot/"
+
         NEXUS_CREDENTIAL_ID = "cartas123456"
         REPOSITORY = "https://github.com/DivanioSilva/spring-boot-graphql.git"
     }
@@ -32,6 +35,9 @@ pipeline {
                 script {
                     // Read POM xml file using 'readMavenPom' step , this step 'readMavenPom' is included in: https://plugins.jenkins.io/pipeline-utility-steps
                     pom = readMavenPom file: "pom.xml";
+
+                    def nexusRepoName = pom.version.endsWith("SNAPSHOT") ? NEXUS_REPOSITORY_SNAPSHOT : NEXUS_REPOSITORY_RELEASE
+                    echo 'nexusRepoName:------> ' +nexusRepoName
                     // Find built artifact under target folder
                     filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
                     echo 'filesByGlob' +filesByGlob
@@ -58,7 +64,7 @@ pipeline {
                             nexusUrl: '192.168.1.149:8081',
                             nexusVersion: 'nexus3',
                             protocol: 'http',
-                            repository: 'maven-nexus-repo-snapshot/',
+                            repository: nexusRepoName,
                             version: pom.version
                     } else {
                         error "*** File: ${artifactPath}, could not be found";
