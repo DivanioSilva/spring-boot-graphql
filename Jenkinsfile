@@ -62,7 +62,7 @@ pipeline {
                             groupId: pom.groupId,
                             nexusUrl: '192.168.1.149:8081',
                             nexusVersion: 'nexus3',
-                            protocol: 'http',
+                            protocol: NEXUS_PROTOCOL,
                             repository: nexusRepoName,
                             version: pom.version
                     } else {
