@@ -60,8 +60,8 @@ pipeline {
                             ],
                             credentialsId: 'nexus3',
                             groupId: pom.groupId,
-                            nexusUrl: '192.168.1.149:8081',
-                            nexusVersion: 'nexus3',
+                            nexusUrl: NEXUS_URL,
+                            nexusVersion: NEXUS_VERSION,
                             protocol: NEXUS_PROTOCOL,
                             repository: nexusRepoName,
                             version: pom.version
