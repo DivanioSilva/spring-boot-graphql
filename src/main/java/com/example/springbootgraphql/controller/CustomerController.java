@@ -1,8 +1,8 @@
 package com.example.springbootgraphql.controller;
 
-import com.example.springbootgraphql.domain.Customer;
-import com.example.springbootgraphql.domain.InputOrder;
-import com.example.springbootgraphql.domain.Order;
+import client.domain.Customer;
+import client.domain.InputOrder;
+import client.domain.Order;
 import com.example.springbootgraphql.repository.CustomerRepository;
 import com.example.springbootgraphql.repository.OrderRepository;
 import lombok.extern.slf4j.Slf4j;

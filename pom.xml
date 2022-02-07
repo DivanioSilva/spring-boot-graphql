@@ -58,9 +58,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.ds</groupId>
+            <groupId>com.dtos</groupId>
             <artifactId>entities</artifactId>
-            <version>7-RELEASE</version>
+            <version>8-RELEASE</version>
         </dependency>
     </dependencies>
 

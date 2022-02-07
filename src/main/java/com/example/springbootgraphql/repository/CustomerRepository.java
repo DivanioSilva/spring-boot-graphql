@@ -1,6 +1,6 @@
 package com.example.springbootgraphql.repository;
 
-import com.example.springbootgraphql.domain.Customer;
+import client.domain.Customer;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
