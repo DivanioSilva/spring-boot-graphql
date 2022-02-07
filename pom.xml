@@ -57,6 +57,11 @@
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.ds</groupId>
+            <artifactId>entities</artifactId>
+            <version>6-RELEASE</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -93,27 +98,29 @@
             </releases>
         </repository>
         <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
             <id>myPrivateNexus-releases</id>
             <name>libraries</name>
             <url>http://dcsilva.ddns.net:8081/repository/maven-nexus-repo-release/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
+        <!-- -->
         <repository>
+            <id>myPrivateNexus-snapshots</id>
+            <name>libraries</name>
+            <url>http://dcsilva.ddns.net:8081/repository/maven-nexus-repo-snapshot/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
             <releases>
                 <enabled>false</enabled>
             </releases>
-            <id>myPrivateNexus-snapshots</id>
-            <name>libraries</name>
-            <url>http://dcsilva.ddns.net:8081/repository/maven-nexus-repo-snapshot/</url>
         </repository>
+
     </repositories>
     <pluginRepositories>
         <pluginRepository>
