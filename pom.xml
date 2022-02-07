@@ -60,7 +60,7 @@
         <dependency>
             <groupId>com.ds</groupId>
             <artifactId>entities</artifactId>
-            <version>6-RELEASE</version>
+            <version>7-RELEASE</version>
         </dependency>
     </dependencies>
 
