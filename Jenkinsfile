@@ -25,7 +25,7 @@ pipeline {
         stage("Maven Build") {
             steps {
                 script {
-                    sh "mvn clean package -DskipTests=true"
+                    sh "mvn clean package -DskipTests=true -Drevision=${currentBuild.number}"
                 }
             }
         }
@@ -49,6 +49,11 @@ pipeline {
                     echo 'artifactExists:' +artifactExists
                     if(artifactExists) {
                         echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
+                        //artifactPath: target/spring-boot-graphql-98-RELEASE.jar
+                        def values = artifactPath.split('target/'+pom.name+'-');
+                        echo 'values: '+values
+                        def finalVersion = values[1].split('.'+pom.packaging);
+                        echo 'finalVersion: '+finalVersion
                         nexusArtifactUploader artifacts: [
                             [
                                 artifactId: pom.name,
@@ -62,7 +67,7 @@ pipeline {
                             nexusVersion: NEXUS_VERSION,
                             protocol: NEXUS_PROTOCOL,
                             repository: nexusRepoName,
-                            version: pom.version
+                            version: finalVersion[0]
                     } else {
                         error "*** File: ${artifactPath}, could not be found";
                     }
