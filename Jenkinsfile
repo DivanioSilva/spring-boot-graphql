@@ -13,6 +13,7 @@ pipeline {
         NEXUS_CREDENTIAL_ID = "nexus3"
         REPOSITORY = "https://github.com/DivanioSilva/spring-boot-graphql.git"
     }
+    
     stages {
         stage('get_commit_details') {
                 steps {
