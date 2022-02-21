@@ -75,5 +75,12 @@ pipeline {
                 }
             }
         }
+        stage("Push to DockerHub") {
+            steps {
+                script {
+                    sh "mvn dockerfile:push -Drevision=${currentBuild.number}"
+                }
+            }
+        }
     }
 }
