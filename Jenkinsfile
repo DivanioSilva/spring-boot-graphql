@@ -77,15 +77,16 @@ pipeline {
                 }
             }
         }
-
         stage('Building our image') {
             steps {
+                timeout(time: 20, unit: 'MINUTES'){
+                        input message: "Should we build the docker image?", ok: "Yes, we should."
+                    }
                 script {
                     dockerImage = docker.build registry + ":$BUILD_NUMBER"
                 }
             }
         }
-
         stage('Deploy our image') {
             steps {
                 script {
@@ -95,7 +96,6 @@ pipeline {
                 }
             }
         }
-
         stage('Cleaning up') {
             steps {
                 sh "docker rmi $registry:$BUILD_NUMBER"
