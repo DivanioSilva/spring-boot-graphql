@@ -34,8 +34,10 @@ pipeline {
         }
         stage("Publish to Nexus Repository Manager") {
             steps {
+                timeout(time: 20, unit: 'MINUTES'){
+                    input message: "Should we deploy this artifact on Nexus?", ok: "Yes, we should."
+                }
                 script {
-                    // Read POM xml file using 'readMavenPom' step , this step 'readMavenPom' is included in: https://plugins.jenkins.io/pipeline-utility-steps
                     pom = readMavenPom file: "pom.xml";
                     def nexusRepoName = pom.version.endsWith("SNAPSHOT") ? NEXUS_REPOSITORY_SNAPSHOT : NEXUS_REPOSITORY_RELEASE
                     echo 'nexusRepoName:------> ' +nexusRepoName
@@ -77,17 +79,17 @@ pipeline {
                 }
             }
         }
-        stage('Building our image') {
+        stage('Building the Docker image') {
             steps {
                 timeout(time: 20, unit: 'MINUTES'){
                         input message: "Should we build the docker image?", ok: "Yes, we should."
-                    }
+                }
                 script {
                     dockerImage = docker.build registry + ":$BUILD_NUMBER"
                 }
             }
         }
-        stage('Deploy our image') {
+        stage('Deploy the Docker image') {
             steps {
                 script {
                     docker.withRegistry( '', registryCredential ) {
