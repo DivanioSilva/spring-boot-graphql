@@ -12,6 +12,8 @@ pipeline {
         NEXUS_REPOSITORY_SNAPSHOT = "maven-nexus-repo-snapshot/"
         NEXUS_CREDENTIAL_ID = "nexus3"
         REPOSITORY = "https://github.com/DivanioSilva/spring-boot-graphql.git"
+        registry = "dcsilva/spring-boot-graphql"
+        registryCredential = "DockerHub"
     }
     
     stages {
@@ -73,6 +75,30 @@ pipeline {
                         error "*** File: ${artifactPath}, could not be found";
                     }
                 }
+            }
+        }
+
+        stage('Building our image') {
+            steps {
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+
+        stage('Deploy our image') {
+            steps {
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+
+        stage('Cleaning up') {
+            steps {
+                sh "docker rmi $registry:$BUILD_NUMBER"
             }
         }
     }
