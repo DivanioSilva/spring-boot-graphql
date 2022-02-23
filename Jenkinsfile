@@ -106,7 +106,17 @@ pipeline {
     }
     post {
         always {
-            deleteDir()
+                deleteDir()
+            }
+        success {
+            echo "Build Success"
+            echo "Successfully built ${env.JOB_BASE_NAME} - ${env.BUILD_ID} on ${env.BUILD_URL}"
+        }
+        failure {
+            echo "Build Failed - ${env.JOB_BASE_NAME} - ${env.BUILD_ID} on ${env.BUILD_URL}"
+        }
+        aborted {
+            echo " ${env.JOB_BASE_NAME} Build - ${env.BUILD_ID} Aborted!"
         }
     }
 }
