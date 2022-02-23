@@ -98,6 +98,16 @@ pipeline {
                 }
             }
         }
+        stage('Run Docker image') {
+            steps {
+                timeout(time: 20, unit: 'MINUTES'){
+                        input message: "Should we run the docker image?", ok: "Yes, we should."
+                }
+                script {
+                    sh "docker run --name containerTestName -p 8000:8080 dcsilva/spring-boot-graphql:2"
+                }
+            }
+        }
         stage('Cleaning up') {
             steps {
                 sh "docker rmi $registry:$BUILD_NUMBER"
