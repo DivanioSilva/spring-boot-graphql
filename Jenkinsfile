@@ -12,10 +12,11 @@ pipeline {
         NEXUS_REPOSITORY_SNAPSHOT = "maven-nexus-repo-snapshot/"
         NEXUS_CREDENTIAL_ID = "nexus3"
         REPOSITORY = "https://github.com/DivanioSilva/spring-boot-graphql.git"
-        registry = "dcsilva/spring-boot-graphql"
-        registryCredential = "DockerHub"
+        REGISTRY = "dcsilva/spring-boot-graphql"
+        REGISTRY_CREDENTIAL = "DockerHub"
         DOCKER_IMAGE = ''
         DOCKER_CONTAINER_NAME = ''
+
     }
     
     stages {
@@ -58,7 +59,7 @@ pipeline {
                         echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
                         //artifactPath: target/spring-boot-graphql-98-RELEASE.jar
                         def values = artifactPath.split('target/'+pom.name+'-');
-                        DOCKER_IMAGE = registry +':'+  currentBuild.number
+                        DOCKER_IMAGE = REGISTRY +':'+  currentBuild.number
                         DOCKER_CONTAINER_NAME = pom.name
                         echo 'values: '+values
                         def finalVersion = values[1].split('.'+pom.packaging);
@@ -89,14 +90,14 @@ pipeline {
                         input message: "Should we build the docker image?", ok: "Yes, we should."
                 }
                 script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    dockerImage = docker.build(REGISTRY + ":$BUILD_NUMBER")
                 }
             }
         }
-        stage('Deploy the Docker image') {
+        stage('Pushing Docker image to DockerHub') {
             steps {
                 script {
-                    docker.withRegistry( '', registryCredential ) {
+                    docker.withRegistry( '', REGISTRY_CREDENTIAL ) {
                         dockerImage.push()
                     }
                 }
@@ -114,30 +115,15 @@ pipeline {
                 */
             }
         }
-        stage('docker stop container') {
+        stage('Deploy') {
             steps {
-                script {
-                    docker.container(DOCKER_IMAGE).stop()
-                }
-            }
+                    //docker.container(DOCKER_IMAGE).stop()
+                    sh "docker stop ${DOCKER_IMAGE} | true"
+                    sh "docker rm ${DOCKER_IMAGE} | true"
+                    sh "docker run ${DOCKER_IMAGE} --name ${DOCKER_CONTAINER_NAME} -p 8090:8080"
 
-        }
-        stage('docker remove container') {
-            steps {
-                script {
-                    docker.container(DOCKER_IMAGE).remove();
-                }
             }
         }
-
-        stage('docker run container') {
-            steps {
-                script {
-                   docker.image(DOCKER_IMAGE).run("--name ${DOCKER_IMAGE_NAME} -p 8081:8080")
-                }
-            }
-        }
-
         stage('Cleaning up') {
             steps {
                 sh "docker rmi $registry:$BUILD_NUMBER"
