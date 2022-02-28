@@ -118,9 +118,11 @@ pipeline {
         stage('Deploy') {
             steps {
                     //docker.container(DOCKER_IMAGE).stop()
+                    echo 'Docker image: ---> ' + DOCKER_IMAGE
+                    echo 'Docker container name: ---> ' +DOCKER_CONTAINER_NAME
                     sh "docker stop ${DOCKER_IMAGE} | true"
                     sh "docker rm ${DOCKER_IMAGE} | true"
-                    sh "docker run ${DOCKER_IMAGE} --name ${DOCKER_CONTAINER_NAME} -p 8090:8080"
+                    sh "docker run --name ${DOCKER_CONTAINER_NAME} -d -p 8090:8080 ${DOCKER_IMAGE}"
 
             }
         }
