@@ -14,6 +14,8 @@ pipeline {
         REPOSITORY = "https://github.com/DivanioSilva/spring-boot-graphql.git"
         registry = "dcsilva/spring-boot-graphql"
         registryCredential = "DockerHub"
+        DOCKER_IMAGE = ''
+        DOCKER_CONTAINER_NAME = ''
     }
     
     stages {
@@ -34,7 +36,7 @@ pipeline {
         }
         stage("Publish to Nexus Repository Manager") {
             steps {
-                timeout(time: 20, unit: 'MINUTES'){
+                timeout(time: 5, unit: 'MINUTES'){
                     input message: "Should we deploy this artifact on Nexus?", ok: "Yes, we should."
                 }
                 script {
@@ -56,6 +58,8 @@ pipeline {
                         echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
                         //artifactPath: target/spring-boot-graphql-98-RELEASE.jar
                         def values = artifactPath.split('target/'+pom.name+'-');
+                        DOCKER_IMAGE = registry +':'+  currentBuild.number
+                        DOCKER_CONTAINER_NAME = pom.name
                         echo 'values: '+values
                         def finalVersion = values[1].split('.'+pom.packaging);
                         echo 'finalVersion: '+finalVersion
@@ -81,7 +85,7 @@ pipeline {
         }
         stage('Building the Docker image') {
             steps {
-                timeout(time: 20, unit: 'MINUTES'){
+                timeout(time: 5, unit: 'MINUTES'){
                         input message: "Should we build the docker image?", ok: "Yes, we should."
                 }
                 script {
@@ -100,14 +104,40 @@ pipeline {
         }
         stage('Run Docker image') {
             steps {
-                timeout(time: 20, unit: 'MINUTES'){
+                timeout(time: 5, unit: 'MINUTES'){
                         input message: "Should we run the docker image?", ok: "Yes, we should."
                 }
+/*
                 script {
-                    sh "docker run --name containerTestName -p 8000:8080 dcsilva/spring-boot-graphql:2"
+                    sh "docker run --name ${DOCKER_IMAGE_NAME} -p 8000:8080 " +$dockerImage
+                }
+                */
+            }
+        }
+        stage('docker stop container') {
+            steps {
+                script {
+                    docker.container(DOCKER_IMAGE).stop()
+                }
+            }
+
+        }
+        stage('docker remove container') {
+            steps {
+                script {
+                    docker.container(DOCKER_IMAGE).remove();
                 }
             }
         }
+
+        stage('docker run container') {
+            steps {
+                script {
+                   docker.image(DOCKER_IMAGE).run("--name ${DOCKER_IMAGE_NAME} -p 8081:8080")
+                }
+            }
+        }
+
         stage('Cleaning up') {
             steps {
                 sh "docker rmi $registry:$BUILD_NUMBER"
