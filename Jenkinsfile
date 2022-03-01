@@ -15,6 +15,7 @@ pipeline {
         REGISTRY = "dcsilva/spring-boot-graphql"
         REGISTRY_CREDENTIAL = "DockerHub"
         DOCKER_IMAGE = ''
+        DOCKER_IMAGE_OLD = ''
         DOCKER_CONTAINER_NAME = ''
 
     }
@@ -60,6 +61,10 @@ pipeline {
                         //artifactPath: target/spring-boot-graphql-98-RELEASE.jar
                         def values = artifactPath.split('target/'+pom.name+'-');
                         DOCKER_IMAGE = REGISTRY +':'+  currentBuild.number
+                        int buildNumber = currentBuild.number;
+                        int a = 1;
+                        int previousTag = buildNumber - a;
+                        DOCKER_IMAGE_OLD = REGISTRY +':'+ previousTag
                         DOCKER_CONTAINER_NAME = pom.name
                         echo 'values: '+values
                         def finalVersion = values[1].split('.'+pom.packaging);
@@ -117,11 +122,11 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                    //docker.container(DOCKER_IMAGE).stop()
+                    echo 'Previous docker image: ---> ' + DOCKER_IMAGE_OLD
                     echo 'Docker image: ---> ' + DOCKER_IMAGE
                     echo 'Docker container name: ---> ' +DOCKER_CONTAINER_NAME
-                    sh "docker stop ${DOCKER_IMAGE} | true"
-                    sh "docker rm ${DOCKER_IMAGE} | true"
+                    sh "docker stop ${DOCKER_IMAGE_OLD} | true"
+                    sh "docker rm ${DOCKER_IMAGE_OLD} | true"
                     sh "docker run --name ${DOCKER_CONTAINER_NAME} -d -p 8090:8080 ${DOCKER_IMAGE}"
 
             }
