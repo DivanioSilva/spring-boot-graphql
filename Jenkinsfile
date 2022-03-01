@@ -64,7 +64,6 @@ pipeline {
                         int buildNumber = currentBuild.number;
                         int a = 1;
                         int previousTag = buildNumber - a;
-                        DOCKER_IMAGE_OLD = REGISTRY +':'+ previousTag
                         DOCKER_CONTAINER_NAME = pom.name
                         echo 'values: '+values
                         def finalVersion = values[1].split('.'+pom.packaging);
@@ -122,13 +121,26 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                    echo 'Previous docker image: ---> ' + DOCKER_IMAGE_OLD
-                    echo 'Docker image: ---> ' + DOCKER_IMAGE
-                    echo 'Docker container name: ---> ' +DOCKER_CONTAINER_NAME
-                    sh "docker stop ${DOCKER_IMAGE_OLD} | true"
-                    sh "docker rm ${DOCKER_IMAGE_OLD} | true"
-                    sh "docker run --name ${DOCKER_CONTAINER_NAME} -d -p 8090:8080 ${DOCKER_IMAGE}"
+                script{
+                    def doc_containers = sh(returnStdout: true, script: 'docker ps --format "{{.ID}}||{{.Image}}||{{.Names}}"')
+                    def finalVersion = doc_containers.split('\n');
+                    def containerId='';
+                    for (i in finalVersion) {
+                        if(i.contains(REGISTRY)){
+                            echo 'ENCONTREI O CONTAINER QUE BUSCO: ' +i
+                            DOCKER_IMAGE_OLD = i.substring(0,12)
+                            echo 'Container id= ' + containerId
+                        }
+                    }
+                }
 
+                echo 'Previous docker image: ---> ' + DOCKER_IMAGE_OLD
+                echo 'Docker image: ---> ' + DOCKER_IMAGE
+                echo 'Docker container name: ---> ' +DOCKER_CONTAINER_NAME
+                sh "docker stop ${DOCKER_IMAGE_OLD} | true"
+                sh "docker rm ${DOCKER_IMAGE_OLD} | true"
+                sh "docker container rm ${DOCKER_IMAGE_OLD} | true"
+                sh "docker run --name ${DOCKER_CONTAINER_NAME} -d -p 8090:8080 ${DOCKER_IMAGE}"
             }
         }
         stage('Cleaning up') {
