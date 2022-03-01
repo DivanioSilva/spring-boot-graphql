@@ -15,8 +15,8 @@ pipeline {
         REGISTRY = "dcsilva/spring-boot-graphql"
         REGISTRY_CREDENTIAL = "DockerHub"
         DOCKER_IMAGE = ''
-        DOCKER_IMAGE_OLD = ''
-        DOCKER_CONTAINER_NAME = ''
+        DOCKER_IMAGE_NAME_OLD = ''
+        DOCKER_CONTAINER_ID_OLD = ''
 
     }
     
@@ -64,7 +64,8 @@ pipeline {
                         int buildNumber = currentBuild.number;
                         int a = 1;
                         int previousTag = buildNumber - a;
-                        DOCKER_CONTAINER_NAME = pom.name
+                        DOCKER_IMAGE_NAME_OLD = REGISTRY +':'+ previousTag
+                        DOCKER_CONTAINER_ID_OLD = pom.name
                         echo 'values: '+values
                         def finalVersion = values[1].split('.'+pom.packaging);
                         echo 'finalVersion: '+finalVersion
@@ -136,11 +137,11 @@ pipeline {
 
                 echo 'Previous docker image: ---> ' + DOCKER_IMAGE_OLD
                 echo 'Docker image: ---> ' + DOCKER_IMAGE
-                echo 'Docker container name: ---> ' +DOCKER_CONTAINER_NAME
-                sh "docker stop ${DOCKER_IMAGE_OLD} | true"
-                sh "docker rm ${DOCKER_IMAGE_OLD} | true"
-                sh "docker container rm ${DOCKER_IMAGE_OLD} | true"
-                sh "docker run --name ${DOCKER_CONTAINER_NAME} -d -p 8090:8080 ${DOCKER_IMAGE}"
+                echo 'Docker container name: ---> ' +DOCKER_CONTAINER_ID_OLD
+                sh "docker stop ${DOCKER_CONTAINER_ID_OLD} | true"
+                sh "docker container rm ${DOCKER_CONTAINER_ID_OLD} | true"
+                sh "docker rmi ${DOCKER_IMAGE_NAME_OLD} | true"
+                sh "docker run --name ${DOCKER_CONTAINER_ID_OLD} -d -p 8090:8080 ${DOCKER_IMAGE}"
             }
         }
         stage('Cleaning up') {
