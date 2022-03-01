@@ -17,10 +17,10 @@ pipeline {
         DOCKER_IMAGE = ''
         DOCKER_IMAGE_NAME_OLD = ''
         DOCKER_CONTAINER_ID_OLD = ''
-
     }
     
     stages {
+        /*
         stage('get_commit_details') {
                 steps {
                     script {
@@ -29,6 +29,7 @@ pipeline {
                     }
                 }
             }
+        */
         stage("Maven Build") {
             steps {
                 script {
@@ -38,9 +39,11 @@ pipeline {
         }
         stage("Publish to Nexus Repository Manager") {
             steps {
+                /*
                 timeout(time: 5, unit: 'MINUTES'){
                     input message: "Should we deploy this artifact on Nexus?", ok: "Yes, we should."
                 }
+                */
                 script {
                     pom = readMavenPom file: "pom.xml";
                     def nexusRepoName = pom.version.endsWith("SNAPSHOT") ? NEXUS_REPOSITORY_SNAPSHOT : NEXUS_REPOSITORY_RELEASE
@@ -91,9 +94,11 @@ pipeline {
         }
         stage('Building the Docker image') {
             steps {
+                /*
                 timeout(time: 5, unit: 'MINUTES'){
                         input message: "Should we build the docker image?", ok: "Yes, we should."
                 }
+                */
                 script {
                     dockerImage = docker.build(REGISTRY + ":$BUILD_NUMBER")
                 }
@@ -108,20 +113,11 @@ pipeline {
                 }
             }
         }
-        stage('Run Docker image') {
+        stage('Deploy') {
             steps {
                 timeout(time: 5, unit: 'MINUTES'){
                         input message: "Should we run the docker image?", ok: "Yes, we should."
                 }
-/*
-                script {
-                    sh "docker run --name ${DOCKER_IMAGE_NAME} -p 8000:8080 " +$dockerImage
-                }
-                */
-            }
-        }
-        stage('Deploy') {
-            steps {
                 script{
                     def doc_containers = sh(returnStdout: true, script: 'docker ps --format "{{.ID}}||{{.Image}}||{{.Names}}"')
                     def finalVersion = doc_containers.split('\n');
@@ -130,7 +126,7 @@ pipeline {
                         if(i.contains(REGISTRY)){
                             echo 'ENCONTREI O CONTAINER QUE BUSCO: ' +i
                             DOCKER_IMAGE_OLD = i.substring(0,12)
-                            echo 'Container id= ' + containerId
+                            echo 'Container id= ' + DOCKER_IMAGE_OLD
                         }
                     }
                 }
@@ -142,11 +138,6 @@ pipeline {
                 sh "docker container rm ${DOCKER_CONTAINER_ID_OLD} | true"
                 sh "docker rmi ${DOCKER_IMAGE_NAME_OLD} | true"
                 sh "docker run --name ${DOCKER_CONTAINER_ID_OLD} -d -p 8090:8080 ${DOCKER_IMAGE}"
-            }
-        }
-        stage('Cleaning up') {
-            steps {
-                sh "docker rmi $registry:$BUILD_NUMBER"
             }
         }
     }
