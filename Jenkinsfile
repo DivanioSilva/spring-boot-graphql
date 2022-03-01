@@ -127,23 +127,19 @@ pipeline {
                             echo 'ENCONTREI O CONTAINER QUE BUSCO: ' +i
                             DOCKER_IMAGE_OLD = i.substring(0,12)
                             echo 'Container id= ' + DOCKER_IMAGE_OLD
+                            sh "docker stop ${DOCKER_CONTAINER_ID_OLD} | true"
+                            sh "docker container rm ${DOCKER_CONTAINER_ID_OLD} | true"
                         }
                     }
                 }
-
-                echo 'Previous docker image: ---> ' + DOCKER_IMAGE_OLD
-                echo 'Docker image: ---> ' + DOCKER_IMAGE
-                echo 'Docker container name: ---> ' +DOCKER_CONTAINER_ID_OLD
-                sh "docker stop ${DOCKER_CONTAINER_ID_OLD} | true"
-                sh "docker container rm ${DOCKER_CONTAINER_ID_OLD} | true"
-                sh "docker rmi ${DOCKER_IMAGE_NAME_OLD} | true"
                 sh "docker run --name ${DOCKER_CONTAINER_ID_OLD} -d -p 8090:8080 ${DOCKER_IMAGE}"
             }
         }
     }
     post {
         always {
-                deleteDir()
+            sh "docker image prune -a -f"
+            deleteDir()
             }
         success {
             echo "Build Success"
