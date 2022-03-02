@@ -92,7 +92,7 @@ pipeline {
                 }
             }
         }
-        stage('Building the Docker image') {
+        stage('Building Docker image') {
             steps {
                 /*
                 timeout(time: 5, unit: 'MINUTES'){
@@ -113,7 +113,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
+        stage('Deploy Docker image') {
             steps {
                 timeout(time: 5, unit: 'MINUTES'){
                         input message: "Should we run the docker image?", ok: "Yes, we should."
