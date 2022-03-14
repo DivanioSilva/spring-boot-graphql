@@ -132,6 +132,16 @@ pipeline {
                             echo 'Container id= ' + DOCKER_CONTAINER_ID
                             sh "docker stop ${DOCKER_CONTAINER_ID} | true"
                             sh "docker container rm ${DOCKER_CONTAINER_ID} | true"
+                        }else{
+                        /*
+                        //aqui a imagem pode não existir ou estar parada
+                        //remover a imagem...
+                        exemplo de mensagem de erro apresentada:
+                        + docker run --name spring-boot-graphql -d -p 8090:8080 dcsilva/spring-boot-graphql:134
+                        docker: Error response from daemon: Conflict. The container name "/spring-boot-graphql"
+                        is already in use by container "39e189f23138e00431c1a7775920f490e273024fe1892e0b3c1c8e7b68693824".
+                        You have to remove (or rename) that container to be able to reuse that name.
+                        */
                         }
                     }
                 }
@@ -140,11 +150,9 @@ pipeline {
         }
     }
     post {
-        always {
+        success {
             sh "docker image prune -a -f"
             deleteDir()
-            }
-        success {
             echo "Build Success"
             echo "Successfully built ${env.JOB_BASE_NAME} - ${env.BUILD_ID} on ${env.BUILD_URL}"
         }

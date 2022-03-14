@@ -17,6 +17,11 @@
     <properties>
         <java.version>1.8</java.version>
         <docker_port>8090</docker_port>
+        <!--
+         Adicionar as novas propriedades
+            REPOSITORY = "https://github.com/DivanioSilva/spring-boot-graphql.git"
+            REGISTRY = "dcsilva/spring-boot-graphql"
+         -->
     </properties>
     <dependencies>
         <dependency>
