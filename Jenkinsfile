@@ -17,6 +17,7 @@ pipeline {
         DOCKER_IMAGE = ''
         DOCKER_IMAGE_NAME_OLD = ''
         DOCKER_CONTAINER_NAME = ''
+        DOCKER_PORT = ''
     }
     
     stages {
@@ -72,6 +73,8 @@ pipeline {
                         echo 'values: '+values
                         def finalVersion = values[1].split('.'+pom.packaging);
                         echo 'finalVersion: '+finalVersion
+                        DOCKER_PORT = pom.properties.docker_port
+                        echo 'docker port: ' + DOCKER_PORT
                         nexusArtifactUploader artifacts: [
                             [
                                 artifactId: pom.name,
@@ -132,7 +135,7 @@ pipeline {
                         }
                     }
                 }
-                sh "docker run --name ${DOCKER_CONTAINER_NAME} -d -p 8090:8080 ${DOCKER_IMAGE}"
+                sh "docker run --name ${DOCKER_CONTAINER_NAME} -d -p ${DOCKER_PORT}:8080 ${DOCKER_IMAGE}"
             }
         }
     }
