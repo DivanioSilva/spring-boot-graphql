@@ -107,7 +107,7 @@
         <repository>
             <id>myPrivateNexus-releases</id>
             <name>libraries</name>
-            <url>http://dcsilva.ddns.net:8081/repository/maven-nexus-repo-release/</url>
+            <url>http://divanio.ddns.net:8081/repository/maven-nexus-repo-release/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -119,7 +119,7 @@
         <repository>
             <id>myPrivateNexus-snapshots</id>
             <name>libraries</name>
-            <url>http://dcsilva.ddns.net:8081/repository/maven-nexus-repo-snapshot/</url>
+            <url>http://divanio.ddns.net:8081/repository/maven-nexus-repo-snapshot/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
